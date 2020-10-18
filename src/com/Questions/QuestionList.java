@@ -10,14 +10,17 @@ public class QuestionList{
         client = new Client("127.0.0.1",5000,type);
     }
     public ArrayList<Question> getList(){
-        QuestionsList = client.getQuestionsfromServer();
+        QuestionsList = client.getQuestionsfromServer(3);
         return QuestionsList;
     }
     public PriorityQueue<Question> getRandomList(){
-         PriorityQueue<Question> pq = new PriorityQueue<Question>(15, new QuestionComparator()); 
+         PriorityQueue<Question> pq = new PriorityQueue<Question>(15, new QuestionComparator());
+         QuestionsList = client.getQuestionsfromServer(4);
+         for(Question question : QuestionsList){
+             pq.add(question);
+         } 
          return pq;
     }
-
 }
 class QuestionComparator implements Comparator<Question>{ 
             public int compare(Question q1, Question q2) { 

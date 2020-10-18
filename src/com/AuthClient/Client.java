@@ -12,7 +12,6 @@ public class Client
     private OutputStream outputStream = null;
     private ObjectOutputStream objectOutputStream = null;
     private ObjectInputStream objectInputStream = null;
-    private DataInputStream dataInputStream = null;
     private String address;
     private int port;
     private User user;
@@ -28,8 +27,8 @@ public class Client
         this.address = address;
         this.category = category;  
     }
-    public boolean LoginUser()throws IOException{
-        boolean flag = true;
+    public User LoginUser()throws IOException{
+       User user = null;
         try
         { 
             this.socket = new Socket(this.address, this.port); 
@@ -40,8 +39,8 @@ public class Client
             this.objectOutputStream = new ObjectOutputStream(this.outputStream);
             System.out.println("Sending messages to the ServerSocket");
             this.objectOutputStream.writeObject(new AuthData(this.user,1)); 
-            this.dataInputStream = new DataInputStream(socket.getInputStream());
-            flag = this.dataInputStream.readBoolean();
+            this.objectInputStream = new ObjectInputStream(socket.getInputStream());
+            user = (User)this.objectInputStream.readObject();
         } 
         catch(Exception u) 
         { 
@@ -58,8 +57,8 @@ public class Client
         catch(IOException i) 
         { 
             System.out.println(i); 
-        } 
-        return flag;
+        }
+        return user;
     }
     public void RegisterUser(){
         try
@@ -97,7 +96,7 @@ public class Client
         } 
     }
     @SuppressWarnings("unchecked")
-    public ArrayList<Question> getQuestionsfromServer(){
+    public ArrayList<Question> getQuestionsfromServer(int type){
         ArrayList<Question> listofQuestions = null;
         try
         { 
@@ -105,10 +104,9 @@ public class Client
             System.out.println("Connected"); 
             this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("Sending messages to the ServerSocket");
-            this.objectOutputStream.writeObject(new AuthData(this.category,3)); 
+            this.objectOutputStream.writeObject(new AuthData(this.category,type)); 
             this.objectInputStream = new ObjectInputStream(socket.getInputStream());
             listofQuestions = (ArrayList<Question>) objectInputStream.readObject();
-            System.out.println(listofQuestions.get(0).getQuestion());
         } 
         catch(Exception u) 
         { 
@@ -126,7 +124,31 @@ public class Client
             System.out.println(i); 
         } 
         return listofQuestions; 
-    }  
+    } 
+    public void setHighestScore(Integer score,User user){
+        try
+        { 
+            this.socket = new Socket(this.address, this.port); 
+            System.out.println("Connected"); 
+            this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("Sending messages to the ServerSocket");
+            this.objectOutputStream.writeObject(new AuthData(user,Integer.toString(score))); 
+        } 
+        catch(Exception u) 
+        { 
+            System.out.println("Connection issue " + u); 
+        }
+        // close the connection 
+        try
+        { 
+            this.objectOutputStream.close(); 
+            this.socket.close(); 
+        } 
+        catch(IOException i) 
+        { 
+            System.out.println(i); 
+        } 
+    } 
 } 
 
  

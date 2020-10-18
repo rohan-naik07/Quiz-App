@@ -14,6 +14,10 @@ public class AuthData implements Serializable {
         this.user = user;
         this.type = type;
     }
+    public AuthData(User user, String question_category){
+        this.user = user;
+        this.question_category = question_category;
+    }
     public AuthData(String question_category,int type){
         this.question_category = question_category;
         this.type = type;
